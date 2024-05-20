@@ -13,7 +13,7 @@ with open ('config.yaml', 'r') as file:
 ## Import uour implementation of the controller, sensor, environment and agent
 from controller.hill_climber import HillClimber
 from sensors.bumper_sensor import BumperSensor
-from world.my_world import My_environment
+from world.example_world2 import My_environment
 from agent.my_agent import MyAgent
 from evolution.evolution import Evolution
 
