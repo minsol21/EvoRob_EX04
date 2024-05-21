@@ -10,7 +10,7 @@ class MyAgent(Agent):
         self.trajectory = []
         self.eval_params = []
         self.current_generation = 0
-
+        self.wheel_distance = 0 
 
 
 

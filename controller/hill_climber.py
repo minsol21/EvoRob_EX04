@@ -1,69 +1,74 @@
 import random
-
 from swarmy.actuation import Actuation
 import yaml
 import math
 
 class HillClimber(Actuation):
-
-    def __init__(self, agent,config):
+    def __init__(self, agent, config):
         super().__init__(agent)
-        """
-        self.linear_velocity = <your value> # set the linear velocity of the robot
-        self.angle_velocity =  <your value> # set the angular velocity of the robot
-        """
         self.config = config
-        self.init_pos = True            # flag to set initial position of the robot
-        self.control_params = [0,0,0,0,0,0]
-
-
-
+        self.init_pos = True
+        self.control_params = [random.uniform(-1, 1) for _ in range(6)]  # Initialize a random genome
+        self.best_fitness = -1  # Initialize the best fitness to a very low value
 
     def controller(self):
-        """
-        This function overwrites the abstract method of the robot controller.
-        these function might help:
-        - self.stepBackward(velocity)
-        - self.turn_right(angle_velocity)
-        - self.turn_left(angle_velocity)
-        - x,y,gamme = self.agent.get_position() # returns the current position and heading of the robot.
-        - self.agent.set_position(new_position_x, new_position_y, robot_heading) # set the new position of the robot
-        - self.agent.get_perception() returns the ID of the robot and sensor values that you implemented in sensor() of the class MySensor()
-        Returns:
-        """
-
-        #Set initial robot position and direction
         if self.init_pos:
             self.agent.initial_position()
             self.init_pos = False
 
+        # Get sensor data
+        sensor_id, sensor_values = self.agent.get_perception()
+        sensor_l, sensor_r, sensor_m = sensor_values
 
-        """ Implement the hill climber behavior here, use the self.control_params that you generated using your hill climber algorithm. """
-        sensor = self.agent.get_perception()
-        robot_position_x, robot_position_y, robot_heading = self.agent.get_position()
+        # Calculate wheel speeds based on the control parameters
+        vl = self.control_params[0]*sensor_l + self.control_params[1]
+        vr = self.control_params[2]*sensor_r + self.control_params[3] + self.control_params[4]*sensor_m + self.control_params[5]
 
-        new_position_x = robot_position_x
-        new_position_y = robot_position_y
-        new_robot_heading = robot_heading
+        # Calculate new linear and angular velocities
+        self.linear_velocity = (vl + vr) / 2
+        self.angle_velocity = -(vr - vl) / 3
+        print(self.angle_velocity*10)
+        # Update the position
+        self.update_position(self.linear_velocity, self.angle_velocity)
 
-        self.agent.trajectory.append([new_position_x, new_position_y])
-        self.agent.set_position(new_position_x, new_position_y, new_robot_heading)
-        self.agent.set_evaluation_params(self.agent.trajectory)
+        # Calculate the fitness
+        fitness = self.calculate_fitness()
 
+        # If the fitness has improved, keep the control parameters. Otherwise, revert to the previous control parameters.
+        if fitness > self.best_fitness:
+            self.best_fitness = fitness
+        else:
+            self.control_params = self.previous_control_params
 
+        # Mutate the control parameters to create a new candidate
+        self.previous_control_params = self.control_params
+        self.control_params = [param + random.uniform(-0.1, 0.1) for param in self.control_params]
 
+    def update_position(self, speed, turn_angle):
+        # Get current position and heading
+        x, y, heading = self.agent.get_position()
+
+        # Calculate the change in position
+        dx = speed * math.sin(math.radians(heading))
+        dy = speed * math.cos(math.radians(heading))
+        # Calculate new position
+        new_x = (x + dx) 
+        new_y = (y + dy)
+        # Calculate new heading
+        #new_heading = round((heading + turn_angle) % (2 * math.pi))
+        new_heading = int(     (heading + turn_angle) % 360 )
+        # Set new position and heading
+        self.agent.set_position(new_x, new_y, new_heading)
+
+    def calculate_fitness(self):
+        # Implement your fitness calculation here. This is just a placeholder.
+        return len(set(self.agent.trajectory))  # Fitness is the number of unique positions visited
 
     def torus(self):
-        """
-        Implement torus world by manipulating the robot position. Again self.agent.get_position and self.agent.set_position might be useful
-        """
-        robot_position_x,robot_position_y, robot_heading = self.agent.get_position()
+        # Get current robot position and heading
+        robot_position_x, robot_position_y, robot_heading = self.agent.get_position()
 
+        # Implement torus world by manipulating the robot position here
 
-        """ Implement torus world by manipulating the robot position, here."""
-
-
+        # Update robot's position and heading
         self.agent.set_position(robot_position_x, robot_position_y, robot_heading)
-
-
-

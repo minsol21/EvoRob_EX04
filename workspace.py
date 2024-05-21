@@ -12,7 +12,7 @@ with open ('config.yaml', 'r') as file:
     config = yaml.load(file, Loader=yaml.FullLoader)
 ## Import uour implementation of the controller, sensor, environment and agent
 from controller.hill_climber import HillClimber
-from sensors.bumper_sensor import BumperSensor
+from sensors.proximity_sensors import ProximitySensor
 from world.example_world2 import My_environment
 from agent.my_agent import MyAgent
 from evolution.evolution import Evolution
@@ -20,7 +20,7 @@ from evolution.evolution import Evolution
 # add your controller, if you have more than one controller, add them to the list and specify the percentage of robots that should use this controller in the config.yaml file
 agent_controller = [HillClimber]
 # add your sensors, if you have more than one sensor, add them to the list all sensors are added to each robot
-agent_sensing = [BumperSensor]
+agent_sensing = [ProximitySensor]
 
 
 """ initialize your evolution object and start the evolution process by initializing the first genome 
@@ -41,7 +41,7 @@ agent_sensing = [BumperSensor]
 
 
 
-evolution = Evolution(config)
+evolution = Evolution(config, MyAgent, My_environment)
 
 exp = Experiment(config, agent_controller, agent_sensing, My_environment, MyAgent)
 exp.init_robots()
