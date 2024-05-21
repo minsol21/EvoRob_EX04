@@ -160,7 +160,9 @@ class Environment():
 
         for x in self.dynamicRectList:
             pygame.draw.rect(self.displaySurface, x[0], x[1], x[2])
-
+        
+        for x in self.agentlist:
+            x.draw_trajectory()
 
         # reset dynamic buffers
         self.resetDynamicBuffers()                  

@@ -39,8 +39,21 @@ class MyAgent(Agent):
         - Use pygame.draw.lines() to draw the trajectory of the robot and access the surface of the environment with self.environment.displaySurface
         - pygame allows to save an image of the current environment
         """
-        print("Save information not implemented, check my_agent.py")
+        #print("Save information not implemented, check my_agent.py")
         """ your implementation here """
+         # Draw the trajectory
+        self.draw_trajectory()
+
+        # Save the image to the local disk
+        pygame.image.save(self.environment.displaySurface, "trajectory.png")
+        pass
+
+    def draw_trajectory(self):
+        self.trajectory = [point for point in self.trajectory]
+        
+        if len(self.trajectory) > 1:  # Ensure there are at least two points to draw a line
+            positions = [(pos[0], pos[1]) for pos in self.trajectory]
+            pygame.draw.lines(self.environment.displaySurface, (255, 0, 0), False, positions, 2)
 
 
 

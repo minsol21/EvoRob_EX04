@@ -45,20 +45,28 @@ class HillClimber(Actuation):
         self.control_params = [param + random.uniform(-0.1, 0.1) for param in self.control_params]
 
     def update_position(self, speed, turn_angle):
-        # Get current position and heading
-        x, y, heading = self.agent.get_position()
+        """
+        Update the agent's position and heading over time.
+        """
+        # Get the current position and heading
+        x, y, gamma = self.agent.get_position()
 
         # Calculate the change in position
-        dx = speed * math.sin(math.radians(heading))
-        dy = speed * math.cos(math.radians(heading))
-        # Calculate new position
-        new_x = (x + dx) 
-        new_y = (y + dy)
-        # Calculate new heading
-        #new_heading = round((heading + turn_angle) % (2 * math.pi))
-        new_heading = int(     (heading + turn_angle) % 360 )
-        # Set new position and heading
+        dx = speed * math.sin(math.radians(gamma))
+        dy = speed * math.cos(math.radians(gamma))
+
+        # Update the heading
+        new_heading = int((gamma + turn_angle) % 360)
+
+        # Update the position 
+        new_x = (x + dx) % self.config['world_width']
+        new_y = (y + dy) % self.config['world_height']
         self.agent.set_position(new_x, new_y, new_heading)
+        #current_time = pygame.time.get_ticks()  # Get the current time in milliseconds
+        #self.agent.trajectory.append((new_x, new_y, current_time))
+        self.agent.trajectory.append((new_x, new_y))
+        # Save the image
+        self.agent.save_information(None)
 
     def calculate_fitness(self):
         # Implement your fitness calculation here. This is just a placeholder.
