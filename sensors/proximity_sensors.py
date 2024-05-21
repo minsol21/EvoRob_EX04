@@ -15,7 +15,7 @@ class ProximitySensor(Perception):
     def sensor(self):
         robot_position_x, robot_position_y, robot_heading = self.agent.get_position()
         rob_pos = pygame.Vector2(robot_position_x, robot_position_y)
-        reach = 0.15*self.width #The range r of our sensors should be about 15% of the square length. 
+        reach = 0.05*self.width #The range r of our sensors should be about 5% of the square length. 
 
         sensor_1_direction_x_l = math.sin(math.radians(robot_heading + 40))
         sensor_1_direction_y_l = math.cos(math.radians(robot_heading + 40))
